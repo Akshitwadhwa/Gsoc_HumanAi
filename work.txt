@@ -1,0 +1,129 @@
+Project progress summary
+
+1. Problem framing
+The project task is to classify each painting by style, genre, and artist, and then identify likely outliers where the assigned label does not visually fit the image.
+
+We decided to start with a strong baseline before attempting a convolutional-recurrent architecture. The baseline is a shared-backbone CNN with separate prediction heads for style, genre, and artist.
+
+2. Dataset and manifest setup
+The raw image dataset is stored under:
+- data/wikiart/
+
+The labels and splits are stored under:
+- data/manifests/
+
+Current manifest files:
+- style_train.csv, style_val.csv, style_class.txt
+- genre_train.csv, genre_val.csv, genre_class.txt
+- artist_train.csv, artist_val.csv, artist_class.txt
+
+Important detail:
+- The image files are stored once under data/wikiart/.
+- The task labels are stored separately in manifests.
+- Multi-task training uses only the intersection of images that appear in all three tasks.
+
+Verified shared overlap:
+- train intersection: 11276 images
+- val intersection: 4707 images
+
+3. Dataset inspection work completed
+The script scripts/inspect_wikiart.py was updated so it can:
+- read task-prefixed manifest names like style_train.csv and artist_val.csv
+- tolerate the current artist CSV formatting
+- resolve image paths correctly against data/wikiart/
+- check for missing files
+
+Verified inspection result:
+- artist: train 13346, val 5706, classes 23
+- genre: train 45503, val 19492, classes 10
+- style: train 57025, val 24421, classes 27
+- missing files: 0
+
+Important data finding:
+- style is highly imbalanced
+- genre is moderately imbalanced
+- artist is comparatively more balanced than style
+
+4. Baseline code added
+New source files were added under src/:
+- src/dataset.py
+- src/model.py
+- src/train.py
+- src/evaluate.py
+- src/metrics.py
+- src/predict.py
+
+What each file does:
+- dataset.py: loads manifests and joins the three tasks on shared image paths
+- model.py: defines a shared-backbone multi-head classifier using ResNet50 or EfficientNet
+- train.py: trains the baseline and reports per-task top-1 and top-5 metrics
+- evaluate.py: evaluates a saved checkpoint
+- metrics.py: reusable metric helpers
+- predict.py: exports per-image predictions for later analysis
+
+5. Training and runtime verification
+The environment packages were available in:
+- ./venv/bin/python
+
+The system python3 did not have the ML dependencies, so project commands should be run through the venv interpreter.
+
+Verified successfully:
+- dataset loading
+- model forward pass
+- end-to-end training smoke run
+- checkpoint save
+- prediction export
+- outlier report generation
+
+Smoke test outputs were generated under:
+- outputs/smoke_resnet50_clean/
+
+6. Outlier analysis support added
+A new script was added:
+- scripts/find_outliers.py
+
+This script reads exported predictions and creates:
+- high_confidence_errors.csv
+- low_confidence_samples.csv
+- outlier_summary.md
+
+Purpose:
+- high-confidence errors are strong candidates for mislabeled or unusual paintings
+- low-confidence samples are ambiguity candidates
+
+7. Documentation and project hygiene
+Updated files:
+- README.md
+- requirements.txt
+- .gitignore
+
+README now includes:
+- dataset inspection
+- baseline training
+- checkpoint evaluation
+- prediction export
+- outlier ranking workflow
+
+8. Where the project stands now
+The project is no longer just a dataset-inspection starter.
+It now has:
+- working manifest-aware dataset code
+- a runnable shared-backbone CNN baseline
+- evaluation support
+- prediction export support
+- outlier analysis support
+
+9. Recommended next steps
+- Run one real baseline training experiment with EfficientNet-B0 or ResNet50
+- Record validation metrics for style, genre, and artist
+- Inspect the high-confidence errors and low-confidence samples
+- Use those results as the reference point for the later convolutional-recurrent model
+- After the baseline is documented, implement the patch-sequence CNN + BiLSTM/GRU model and compare it against the baseline
+
+10. Important command pattern
+Use the venv interpreter for project runs:
+
+./venv/bin/python -m src.train ...
+./venv/bin/python -m src.evaluate ...
+./venv/bin/python -m src.predict ...
+./venv/bin/python scripts/find_outliers.py ...
