@@ -27,6 +27,21 @@ python3 -m src.train \
   --output-dir outputs/baseline_resnet50
 ```
 
+To train the convolutional-recurrent variant instead:
+
+```bash
+python3 -m src.train \
+  --image-root data/wikiart \
+  --manifest-root data/manifests \
+  --tasks style genre artist \
+  --model conv_recurrent \
+  --backbone resnet50 \
+  --rnn-hidden-size 256 \
+  --epochs 10 \
+  --batch-size 32 \
+  --output-dir outputs/conv_recurrent_resnet50
+```
+
 5. Evaluate a saved checkpoint:
 
 ```bash
@@ -73,10 +88,10 @@ Use the Day 1 summary to choose a baseline:
 
 ## Baseline Model
 
-The project now includes a shared-backbone CNN baseline in `src/`:
+The project now includes both a shared-backbone CNN baseline and a convolutional-recurrent alternative in `src/`:
 
 - `src/dataset.py`: joins `style`, `genre`, and `artist` manifests on shared image paths
-- `src/model.py`: `ResNet50` or `EfficientNet` backbone with one head per task
+- `src/model.py`: `ResNet50` / `EfficientNet` CNN baseline and a conv-recurrent GRU variant over spatial CNN features
 - `src/train.py`: training loop with top-1 and top-5 validation metrics
 - `src/evaluate.py`: checkpoint evaluation on train or validation splits
 - `src/predict.py`: per-image prediction export for error analysis

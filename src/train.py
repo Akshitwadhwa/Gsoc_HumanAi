@@ -13,7 +13,7 @@ from torchvision import transforms
 
 from src.dataset import DEFAULT_TASKS, WikiArtMultiTaskDataset, collate_valid_samples
 from src.metrics import mean_task_score, topk_accuracy
-from src.model import MultiTaskClassifier
+from src.model import BACKBONE_CHOICES, MODEL_CHOICES, build_model
 
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -33,11 +33,12 @@ def build_grad_scaler(device: torch.device) -> torch.amp.GradScaler:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train a WikiArt CNN baseline.")
+    parser = argparse.ArgumentParser(description="Train a WikiArt multi-task classifier.")
     parser.add_argument("--image-root", type=Path, default=Path("data/wikiart"))
     parser.add_argument("--manifest-root", type=Path, default=Path("data/manifests"))
     parser.add_argument("--tasks", nargs="+", default=list(DEFAULT_TASKS))
-    parser.add_argument("--backbone", choices=["resnet50", "efficientnet_b0", "efficientnet_b2"], default="resnet50")
+    parser.add_argument("--model", choices=list(MODEL_CHOICES), default="cnn")
+    parser.add_argument("--backbone", choices=list(BACKBONE_CHOICES), default="resnet50")
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--num-workers", type=int, default=4)
@@ -45,6 +46,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=3e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--dropout", type=float, default=0.2)
+    parser.add_argument("--rnn-hidden-size", type=int, default=256)
+    parser.add_argument("--rnn-layers", type=int, default=1)
+    parser.add_argument("--no-bidirectional", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/baseline"))
     parser.add_argument("--device", type=str, default=default_device())
@@ -194,11 +198,15 @@ def main() -> int:
     )
 
     num_classes = {task: len(train_dataset.class_names[task]) for task in tasks}
-    model = MultiTaskClassifier(
+    model = build_model(
+        model_name=args.model,
         backbone_name=args.backbone,
         num_classes=num_classes,
         pretrained=not args.no_pretrained,
         dropout=args.dropout,
+        rnn_hidden_size=args.rnn_hidden_size,
+        rnn_layers=args.rnn_layers,
+        bidirectional=not args.no_bidirectional,
     ).to(device)
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     scaler = build_grad_scaler(device)
@@ -211,6 +219,8 @@ def main() -> int:
 
     print(f"Train samples: {len(train_dataset)}")
     print(f"Val samples: {len(val_dataset)}")
+    print(f"Model: {args.model}")
+    print(f"Backbone: {args.backbone}")
     print(f"Tasks: {', '.join(tasks)}")
 
     for epoch in range(1, args.epochs + 1):
@@ -270,11 +280,15 @@ def main() -> int:
             torch.save(
                 {
                     "model_state": model.state_dict(),
+                    "model_name": args.model,
                     "backbone": args.backbone,
                     "tasks": list(tasks),
                     "class_names": train_dataset.class_names,
                     "image_size": args.image_size,
                     "dropout": args.dropout,
+                    "rnn_hidden_size": args.rnn_hidden_size,
+                    "rnn_layers": args.rnn_layers,
+                    "bidirectional": not args.no_bidirectional,
                 },
                 best_checkpoint_path,
             )

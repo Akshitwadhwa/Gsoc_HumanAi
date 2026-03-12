@@ -11,7 +11,7 @@ from torchvision import transforms
 
 from src.dataset import WikiArtMultiTaskDataset, collate_valid_samples
 from src.metrics import mean_task_score, topk_accuracy
-from src.model import MultiTaskClassifier
+from src.model import build_model_from_checkpoint
 
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -27,7 +27,7 @@ def default_device() -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Evaluate a WikiArt CNN baseline.")
+    parser = argparse.ArgumentParser(description="Evaluate a WikiArt multi-task checkpoint.")
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--image-root", type=Path, default=Path("data/wikiart"))
     parser.add_argument("--manifest-root", type=Path, default=Path("data/manifests"))
@@ -58,11 +58,10 @@ def main() -> int:
     tasks = tuple(checkpoint["tasks"])
     image_size = int(checkpoint["image_size"])
     class_names = checkpoint["class_names"]
-    model = MultiTaskClassifier(
-        backbone_name=checkpoint["backbone"],
+    model = build_model_from_checkpoint(
+        checkpoint=checkpoint,
         num_classes={task: len(class_names[task]) for task in tasks},
         pretrained=False,
-        dropout=float(checkpoint.get("dropout", 0.2)),
     ).to(device)
     model.load_state_dict(checkpoint["model_state"])
     model.eval()

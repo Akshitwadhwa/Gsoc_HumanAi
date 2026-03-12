@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from src.dataset import WikiArtMultiTaskDataset, collate_valid_samples
-from src.model import MultiTaskClassifier
+from src.model import build_model_from_checkpoint
 
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -75,11 +75,10 @@ def main() -> int:
         collate_fn=collate_valid_samples,
     )
 
-    model = MultiTaskClassifier(
-        backbone_name=checkpoint["backbone"],
+    model = build_model_from_checkpoint(
+        checkpoint=checkpoint,
         num_classes={task: len(class_names[task]) for task in tasks},
         pretrained=False,
-        dropout=float(checkpoint.get("dropout", 0.2)),
     ).to(device)
     model.load_state_dict(checkpoint["model_state"])
     model.eval()
