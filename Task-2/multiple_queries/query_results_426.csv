@@ -1,0 +1,7 @@
+query_objectid,rank,objectid,score,title,artist_name,classification
+426,1,370,0.6657741069793701,Tobias and the Angel,"Lippi, Filippino",Painting
+426,2,20,0.6638638973236084,The Adoration of the Child,"Lippi, Filippino",Painting
+426,3,31,0.6276019215583801,"The Crucifixion with the Virgin, Saint John, Saint Jerome, and Saint Mary Magdalene [right panel]","Perugino, Pietro",Painting
+426,4,320,0.601158618927002,Portrait of a Boy,Biagio d'Antonio,Painting
+426,5,1099,0.5983288884162903,Portrait of a Lady,"Highmore, Joseph",Painting
+426,6,1145,0.5954034924507141,David with the Head of Goliath,Andrea del Castagno,Painting

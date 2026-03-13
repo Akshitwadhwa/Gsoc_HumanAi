@@ -1,0 +1,7 @@
+query_objectid,rank,objectid,score,title,artist_name,classification
+6,1,8,1.0000001192092896,Saint Venantius [right panel],Puccio di Simone,Painting
+6,2,7,1.0000001192092896,Madonna and Child Enthroned with Four Saints and Eighteen Angels [middle panel],Puccio di Simone,Painting
+6,3,402,0.7013183236122131,Saint Peter [left panel],Nardo di Cione,Painting
+6,4,403,0.7013183236122131,"Madonna and Child, with the Man of Sorrows [middle panel]",Nardo di Cione,Painting
+6,5,404,0.7013183236122131,Saint John the Evangelist [right panel],Nardo di Cione,Painting
+6,6,3,0.6603673100471497,"Madonna and Child Enthroned with Twelve Angels, and with the Blessing Christ [middle panel]","Gaddi, Agnolo",Painting

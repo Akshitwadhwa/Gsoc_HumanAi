@@ -1,0 +1,7 @@
+query_objectid,rank,objectid,score,title,artist_name,classification
+1129,1,1124,0.7016894817352295,John Quincy Adams,"Sully, Thomas",Painting
+1129,2,567,0.700705349445343,Alexander Hamilton,"Trumbull, John",Painting
+1129,3,1127,0.6524956822395325,Francis Hopkinson,"Sully, Thomas",Painting
+1129,4,1114,0.6409926414489746,Stephen Van Rensselaer III,"Stuart, Gilbert",Painting
+1129,5,1117,0.6367588639259338,Edward Stow,"Stuart, Gilbert",Painting
+1129,6,1184,0.6120731830596924,"""Titian's Schoolmaster""","Moroni, Giovanni Battista",Painting

@@ -1,0 +1,7 @@
+query_objectid,rank,objectid,score,title,artist_name,classification
+98,1,994,0.6109004020690918,Soap Bubbles,"Simpson, John W., Mrs.",Painting
+98,2,97,0.5916889905929565,The House of Cards,"Chardin, Jean Siméon",Painting
+98,3,1115,0.5425519943237305,Sir Joshua Reynolds,"Stuart, Gilbert",Painting
+98,4,293,0.5375950336456299,The Madonna of the Carnation,"Luini, Bernardino",Painting
+98,5,563,0.5321456789970398,Catherine Brass Yates (Mrs. Richard Yates),"Stuart, Gilbert",Painting
+98,6,399,0.5188170671463013,Portrait of a Venetian Gentleman,Cariani,Painting

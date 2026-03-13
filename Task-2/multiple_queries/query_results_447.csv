@@ -1,0 +1,7 @@
+query_objectid,rank,objectid,score,title,artist_name,classification
+447,1,272,0.673149049282074,The Baptism of Christ,"Baronzio, Giovanni",Painting
+447,2,405,0.6688235998153687,Madonna and Child in a Landscape,Italian 15th Century,Painting
+447,3,9,0.6400513648986816,The Madonna of Humility,Masaccio,Painting
+447,4,531,0.6394574046134949,The Holy Family,"Bronzino, Agnolo",Painting
+447,5,23,0.6252943277359009,Madonna and Child,"Botticelli, Sandro",Painting
+447,6,1142,0.6214120388031006,The Baptism of Christ,"Bordone, Paris",Painting

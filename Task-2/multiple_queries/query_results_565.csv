@@ -1,0 +1,7 @@
+query_objectid,rank,objectid,score,title,artist_name,classification
+565,1,1121,0.8902706503868103,George Washington (Vaughan portrait),"Stuart, Gilbert",Painting
+565,2,567,0.743219256401062,Alexander Hamilton,"Trumbull, John",Painting
+565,3,1119,0.6833902597427368,William Thornton,"Stuart, Gilbert",Painting
+565,4,1114,0.6826611757278442,Stephen Van Rensselaer III,"Stuart, Gilbert",Painting
+565,5,1128,0.6789109110832214,Andrew Jackson,"Sully, Thomas",Painting
+565,6,1117,0.6784985065460205,Edward Stow,"Stuart, Gilbert",Painting
