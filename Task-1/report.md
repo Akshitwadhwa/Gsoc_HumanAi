@@ -78,11 +78,5 @@ Examples from generated outlier files show typical failure modes:
   - `Naive_Art_Primitivism/marc-chagall_david-and-bathsheba-1956-1.jpg`
   - Predicted `illustration` instead of `religious_painting`.
 
-## 8. Final Conclusion
-Task 1 is completed end-to-end:
-- Multi-task training pipeline implemented.
-- Convolutional-recurrent architecture implemented and compared against baseline.
-- Evaluation metrics discussed and reported.
-- Outlier detection pipeline executed with quantitative and qualitative findings.
 
 Final result: **the conv-recurrent model is the stronger approach on this setup**, with higher mean Top-1 and fewer high-confidence error/outlier candidates.
