@@ -1,0 +1,2 @@
+rank_in_group,image_path,incorrect_tasks,mean_confidence,style_true_name,style_pred_name,genre_true_name,genre_pred_name,artist_true_name,artist_pred_name,verdict,suggested_label,notes
+1,Analytical_Cubism/pablo-picasso_friendship-1908.jpg,"style,genre",0.992998,Analytical_Cubism,Cubism,genre_painting,genre_painting,Pablo_Picasso,Pablo_Picasso,model_error,style: Analytical_Cubism; genre: genre_painting,Manual audit: keep true labels; predicted style should be Cubism and predicted genre should be genre_painting.

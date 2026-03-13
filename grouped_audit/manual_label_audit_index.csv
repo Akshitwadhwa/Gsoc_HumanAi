@@ -1,7 +1,0 @@
-incorrect_tasks,rows,audit_csv,contact_sheet
-artist,6,manual_label_audit_artist.csv,contact_sheet_artist.jpg
-genre,66,manual_label_audit_genre.csv,contact_sheet_genre.jpg
-style,14,manual_label_audit_style.csv,contact_sheet_style.jpg
-"style,artist",10,manual_label_audit_style_artist.csv,contact_sheet_style_artist.jpg
-"style,genre",1,manual_label_audit_style_genre.csv,contact_sheet_style_genre.jpg
-"style,genre,artist",3,manual_label_audit_style_genre_artist.csv,contact_sheet_style_genre_artist.jpg

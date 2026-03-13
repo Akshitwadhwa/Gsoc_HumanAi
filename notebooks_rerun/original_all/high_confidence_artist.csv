@@ -1,8 +1,0 @@
-image_path,style_true_index,style_true_name,style_pred_index,style_pred_name,style_confidence,style_correct,genre_true_index,genre_true_name,genre_pred_index,genre_pred_name,genre_confidence,genre_correct,artist_true_index,artist_true_name,artist_pred_index,artist_pred_name,artist_confidence,artist_correct,mean_confidence,all_correct,incorrect_tasks
-Romanticism/gustave-dore_a-souvenir-from-scotland-1879.jpg,23,Romanticism,23,Romanticism,0.990442,1,4,landscape,4,landscape,0.988202,1,7,Gustave_Dore,9,Ivan_Aivazovsky,0.999178,0,0.992607,0,artist
-Realism/vincent-van-gogh_autumn-landscape-with-four-trees-1885(1).jpg,21,Realism,21,Realism,0.993358,1,4,landscape,4,landscape,0.997728,1,22,Vincent_van_Gogh,10,Ivan_Shishkin,0.984420,0,0.991835,0,artist
-Realism/ilya-repin_portrait-of-b-a-kaminka-1908.jpg,21,Realism,21,Realism,0.944397,1,6,portrait,6,portrait,0.998957,1,8,Ilya_Repin,1,Boris_Kustodiev,0.999460,0,0.980938,0,artist
-Impressionism/claude-monet_amsterdam-in-the-snow(1).jpg,12,Impressionism,12,Impressionism,0.988656,1,1,cityscape,1,cityscape,0.972038,1,4,Claude_Monet,6,Eugene_Boudin,0.963219,0,0.974637,0,artist
-Impressionism/camille-pissarro_le-boulevard-de-clichy-1880.jpg,12,Impressionism,12,Impressionism,0.997649,1,1,cityscape,1,cityscape,0.999965,1,2,Camille_Pissarro,4,Claude_Monet,0.921460,0,0.973025,0,artist
-Cubism/pablo-picasso_still-life-in-front-of-a-window-at-saint-raphael-1919.jpg,7,Cubism,7,Cubism,0.999668,1,9,still_life,9,still_life,0.990928,1,15,Pablo_Picasso,21,Salvador_Dali,0.927165,0,0.972587,0,artist
-Impressionism/claude-monet_boat-at-low-tide-at-fecamp.jpg,12,Impressionism,12,Impressionism,0.932010,1,1,cityscape,1,cityscape,0.995988,1,4,Claude_Monet,6,Eugene_Boudin,0.979321,0,0.969107,0,artist
