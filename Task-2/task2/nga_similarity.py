@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import math
 import urllib.request
 from pathlib import Path
@@ -26,6 +27,24 @@ RAW_FILENAMES = {
     "constituents": "constituents.csv",
 }
 
+MODEL_SPECS = {
+    "resnet50": {
+        "builder": models.resnet50,
+        "weights": models.ResNet50_Weights.DEFAULT,
+        "embedding_dim": 2048,
+    },
+    "vit_b_16": {
+        "builder": models.vit_b_16,
+        "weights": models.ViT_B_16_Weights.DEFAULT,
+        "embedding_dim": 768,
+    },
+    "efficientnet_b0": {
+        "builder": models.efficientnet_b0,
+        "weights": models.EfficientNet_B0_Weights.IMAGENET1K_V1,
+        "embedding_dim": 1280,
+    },
+}
+
 
 def default_device() -> str:
     if torch.cuda.is_available():
@@ -37,6 +56,13 @@ def default_device() -> str:
 
 def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
+
+
+def validate_model_name(model_name: str) -> str:
+    if model_name not in MODEL_SPECS:
+        supported = ", ".join(sorted(MODEL_SPECS))
+        raise SystemExit(f"Unsupported model_name '{model_name}'. Supported values: {supported}")
+    return model_name
 
 
 def download_file(url: str, path: Path) -> None:
@@ -213,33 +239,42 @@ class ImageEmbeddingDataset(Dataset):
 
 
 def build_transform() -> transforms.Compose:
-    return transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-        ]
-    )
+    return build_transform_for_model("resnet50")
 
 
-def build_encoder() -> nn.Module:
-    weights = models.ResNet50_Weights.DEFAULT
-    model = models.resnet50(weights=weights)
-    backbone = nn.Sequential(*list(model.children())[:-1])
+def build_transform_for_model(model_name: str) -> transforms.Compose:
+    spec = MODEL_SPECS[validate_model_name(model_name)]
+    return spec["weights"].transforms()
+
+
+def build_encoder(model_name: str = "resnet50") -> tuple[nn.Module, int]:
+    spec = MODEL_SPECS[validate_model_name(model_name)]
+    model = spec["builder"](weights=spec["weights"])
+    if model_name == "resnet50":
+        backbone = nn.Sequential(*list(model.children())[:-1])
+    elif model_name == "vit_b_16":
+        model.heads = nn.Identity()
+        backbone = model
+    elif model_name == "efficientnet_b0":
+        model.classifier = nn.Identity()
+        backbone = model
+    else:
+        raise SystemExit(f"Model implementation missing for {model_name}")
     backbone.eval()
-    return backbone
+    return backbone, int(spec["embedding_dim"])
 
 
 def extract_embeddings(
     metadata_csv: Path,
     image_dir: Path,
     output_dir: Path,
+    model_name: str = "resnet50",
     batch_size: int = 16,
     num_workers: int = 0,
     device: str | None = None,
 ) -> tuple[Path, Path]:
     ensure_dir(output_dir)
+    model_name = validate_model_name(model_name)
     metadata = pd.read_csv(metadata_csv)
     available_rows = []
     for row in metadata.itertuples(index=False):
@@ -249,12 +284,13 @@ def extract_embeddings(
     if metadata.empty:
         raise SystemExit("No local images found. Run download_images.py first.")
 
-    transform = build_transform()
+    transform = build_transform_for_model(model_name)
     dataset = ImageEmbeddingDataset(metadata, image_dir, transform)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
-    model = build_encoder().to(device or default_device())
-    embeddings = torch.zeros((len(metadata), 2048), dtype=torch.float32)
+    model, embedding_dim = build_encoder(model_name=model_name)
+    model = model.to(device or default_device())
+    embeddings = torch.zeros((len(metadata), embedding_dim), dtype=torch.float32)
     with torch.no_grad():
         for images, indices in loader:
             images = images.to(device or default_device())
@@ -264,8 +300,20 @@ def extract_embeddings(
     embeddings = torch.nn.functional.normalize(embeddings, dim=1)
     metadata_out = output_dir / "index_metadata.csv"
     embed_out = output_dir / "embeddings.pt"
+    info_out = output_dir / "index_info.json"
     metadata.to_csv(metadata_out, index=False)
     torch.save(embeddings, embed_out)
+    info_out.write_text(
+        json.dumps(
+            {
+                "model_name": model_name,
+                "embedding_dim": embedding_dim,
+                "device": device or default_device(),
+                "index_rows": len(metadata),
+            },
+            indent=2,
+        )
+    )
     return metadata_out, embed_out
 
 
@@ -275,9 +323,17 @@ def load_index(output_dir: Path) -> tuple[pd.DataFrame, torch.Tensor]:
     return metadata, embeddings
 
 
-def encode_single_image(image_path: Path, device: str | None = None) -> torch.Tensor:
-    transform = build_transform()
-    model = build_encoder().to(device or default_device())
+def load_index_info(output_dir: Path) -> dict[str, object]:
+    info_path = output_dir / "index_info.json"
+    if not info_path.exists():
+        return {"model_name": "resnet50", "embedding_dim": 2048}
+    return json.loads(info_path.read_text())
+
+
+def encode_single_image(image_path: Path, model_name: str = "resnet50", device: str | None = None) -> torch.Tensor:
+    transform = build_transform_for_model(model_name)
+    model, _ = build_encoder(model_name=model_name)
+    model = model.to(device or default_device())
     image = Image.open(image_path).convert("RGB")
     tensor = transform(image).unsqueeze(0).to(device or default_device())
     with torch.no_grad():

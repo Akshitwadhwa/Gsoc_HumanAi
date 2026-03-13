@@ -3,5 +3,8 @@ __pycache__/
 .DS_Store
 .venv/
 venv/
+venv
 data/
 outputs/
+.torch-cache/
+Task-2/.torch-cache/

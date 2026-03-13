@@ -4,7 +4,13 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from task2.nga_similarity import encode_single_image, find_similar, load_index, write_retrieval_results
+from task2.nga_similarity import (
+    encode_single_image,
+    find_similar,
+    load_index,
+    load_index_info,
+    write_retrieval_results,
+)
 
 
 def main() -> int:
@@ -17,6 +23,8 @@ def main() -> int:
     args = parser.parse_args()
 
     metadata, embeddings = load_index(args.output_dir)
+    index_info = load_index_info(args.output_dir)
+    model_name = str(index_info.get("model_name", "resnet50"))
     if args.object_id:
         matches = metadata.index[metadata["objectid"] == args.object_id].tolist()
         if not matches:
@@ -26,7 +34,7 @@ def main() -> int:
         query_object_id = int(metadata.iloc[query_index]["objectid"])
     elif args.image_path is not None:
         query_index = None
-        query_embedding = encode_single_image(args.image_path)
+        query_embedding = encode_single_image(args.image_path, model_name=model_name)
         query_object_id = -1
     else:
         raise SystemExit("Provide either --object-id or --image-path.")
